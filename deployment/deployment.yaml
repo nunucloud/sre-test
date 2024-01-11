@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
       - name: mario
-        image: pengbai/docker-supermario
+        image: patnmat/sre-test:mario
 ---
 apiVersion: v1
 kind: Service
@@ -56,7 +56,7 @@ spec:
     spec:
       containers:
       - name: tetris
-        image: bsord/tetris
+        image: patnmat/sre-test:tetris
 ---
 apiVersion: v1
 kind: Service
