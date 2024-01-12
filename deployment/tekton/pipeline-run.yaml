@@ -1,0 +1,37 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  namespace: tekton-test
+  generateName: cicd- # make name automate with random index ( for re use pipelinerun yaml )
+spec:
+  serviceAccountName: cicd-sa
+  pipelineRef: # select pipeline
+    name: cicd
+  podTemplate: # setting taskpod
+    securityContext:  # pod security
+      fsGroup: 65532 # set volume owner gid = 65532
+  workspaces: # volume for clone code
+  - name: shared-data
+    volumeClaimTemplate: # automatically create pvc -> create pv
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+  - name: docker-credentials
+    secret:
+      secretName: docker-credentials
+    
+  params: # git address
+  - name: repo-url
+    value: "git@github.com:nunucloud/sre-test.git"
+  - name: image-reference
+    value: patnmat/sre-test:tetris
+  - name: dockerfile-path
+    value: ./tetris/Dockerfile
+  - name: kubectl-args
+    value:
+      - "apply"
+      - "-f"
+      - "./deployment/tetris/deployment.yaml"
