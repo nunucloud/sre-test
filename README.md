@@ -1,16 +1,21 @@
-# SQD-SRE 101 
-This repository is for study purposes in SQD-SRE TEAM 
+# Docker Super Mario
+Infinite Mario in HTML5 JavaScript - using Canvas and Audio elements
 
-## PORT
-- Tetris: 30007
-- Mario: 30008
+[![Docker Hub](https://img.shields.io/badge/docker-ready-blue.svg)](https://hub.docker.com/r/pengbai/docker-supermario/)
+[![](https://imagelayers.io/badge/pengbai/docker-supermario:latest.svg)](https://imagelayers.io/?images=pengbai/docker-supermario:latest 'Get your own badge on imagelayers.io')
 
-### Kubeconfig setting
-```bash
-export KUBE_CONFIG_PATH=path/to/.kube/config
+[![asciicast](https://asciinema.org/a/46186.png)](https://asciinema.org/a/46186)
+
+Image on docker hub: [https://hub.docker.com/r/pengbai/docker-supermario/](https://hub.docker.com/r/pengbai/docker-supermario/)
+
+## Description
+
+Run with mapping container's 8080 port, and use your navigator http://localhost:8600:
+```
+docker run -d -p 8600:8080 pengbai/docker-supermario
 ```
 
-### Deploy
-```bash
-kubectl apply -f https://raw.githubusercontent.com/nunucloud/sre-test/main/deployment/deployment.yaml
-```
+[![](https://github.com/PengBAI/mariohtml5/blob/master/demo/demo.PNG?raw=true)](https://github.com/PengBAI/mariohtml5/blob/master/demo/demo.PNG?raw=true)
+
+
+from gitpod
