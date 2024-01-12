@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tetris
+  namespace: games
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tetris
+  template:
+    metadata:
+      labels:
+        app: tetris
+    spec:
+      containers:
+      - name: tetris
+        image: patnmat/sre-test:tetris
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tetris
+  namespace: games
+  annotations:
+    alb.ingress.kubernetes.io/healthcheck-path: /tetris/index.html
+spec:
+  selector:
+    app: tetris
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+    nodePort: 30007
+  type: NodePort
