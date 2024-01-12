@@ -16,8 +16,8 @@ spec:
       containers:
       - name: tetris
         image: patnmat/sre-test:tetris
-      # imagePullSecrets:
-      # - name: docker-credentials
+      imagePullSecrets:
+      - name: docker-credentials
 ---
 apiVersion: v1
 kind: Service
