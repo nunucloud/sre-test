@@ -23,7 +23,7 @@ metadata:
   name: rolebind-for-deploy
 subjects:
   - kind: ServiceAccount
-    name: cicd
+    name: cicd-sa
     namespace: tekton-test
 roleRef:
   kind: ClusterRole
