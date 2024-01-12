@@ -19,6 +19,9 @@ spec:
         resources:
           requests:
             storage: 1Gi
+  - name: git-credentials
+    secret:
+      secretName: git-credentials
   - name: docker-credentials
     secret:
       secretName: docker-credentials
@@ -27,11 +30,11 @@ spec:
   - name: repo-url
     value: "git@github.com:nunucloud/sre-test.git"
   - name: image-reference
-    value: patnmat/sre-test:tetris
+    value: patnmat/sre-test:mario
   - name: dockerfile-path
-    value: ./tetris/Dockerfile
+    value: Dockerfile
   - name: kubectl-args
     value:
       - "apply"
       - "-f"
-      - "./deployment/tetris/deployment.yaml"
+      - "./deployment/mario/deployment.yaml"
