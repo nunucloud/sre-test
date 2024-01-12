@@ -4,7 +4,7 @@ metadata:
   name: cicd-sa
   namespace: tekton-test
 secrets:
-  - name: git-credential
+  - name: git-credentials
   - name: docker-credentials
 ---
 kind: ClusterRole
