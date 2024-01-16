@@ -1,31 +1,66 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: cicd-sa
+  name: trigger-sa
   namespace: tekton-test
-secrets:
-  - name: git-credentials
-  - name: docker-credentials
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: tekton-triggers-role
+  namespace: tekton-test
+rules:
+# EventListeners need to be able to fetch all namespaced resources
+- apiGroups: ["triggers.tekton.dev"]
+  resources: ["*"]
+  verbs: ["*"]
+- apiGroups: [""]
+ # secrets are only needed for GitHub/GitLab interceptors
+ # configmaps is needed for updating logging config
+  resources: ["configmaps", "secrets"]
+  verbs: ["get", "list"]
+ # Permissions to create resources in associated TriggerTemplates
+- apiGroups: ["tekton.dev"]
+  resources: ["pipelineruns", "taskruns"]
+  verbs: ["create"]
+- apiGroups: [""]
+  resources: ["serviceaccounts"]
+  verbs: ["impersonate"]
+
 ---
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  namespace: '*'
-  name: role-for-tektondeploy
+  name: tekton-triggers-clusterrole
 rules:
-- apiGroups: ["*"]
-  resources: ["*"]
-  verbs: ["*"]
+  # EventListeners need to be able to fetch any clustertriggerbindings
+- apiGroups: ["triggers.tekton.dev"]
+  resources: ["clustertriggerbindings","clusterinterceptors"]
+  verbs: ["get","list","watch"]
 ---
-kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
 metadata:
-  name: rolebind-for-deploy
+  name: tekton-triggers-clusterbinding
 subjects:
-  - kind: ServiceAccount
-    name: cicd-sa
-    namespace: tekton-test
+- kind: ServiceAccount
+  name: trigger-sa
+  namespace: tekton-test
 roleRef:
-  kind: ClusterRole
-  name: role-for-tektondeploy
   apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: tekton-triggers-clusterrole
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: tekton-triggers-rolebinding
+  namespace: tekton-test
+subjects:
+- kind: ServiceAccount
+  name: trigger-sa
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: tekton-triggers-role
