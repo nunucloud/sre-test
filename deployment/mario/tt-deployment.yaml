@@ -32,4 +32,4 @@ spec:
     protocol: TCP
     targetPort: 8080
     nodePort: 30008
-  type: NodePort
+  type: NodePort # add tag test
