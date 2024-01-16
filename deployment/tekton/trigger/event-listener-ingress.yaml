@@ -1,0 +1,42 @@
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: tt-ingress
+#   namespace: tekton-test
+#   annotations:
+#     kubernetes.io/ingress.class: nginx
+#     nginx.ingress.kubernetes.io/ssl-redirect: "false"
+# spec:
+#   rules:
+#     - http:
+#         paths:
+#           - path: /
+#             pathType: Prefix
+#             backend:
+#               service:
+#                 name: el-el
+#                 port:
+#                   number: 8080
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
+  name: el-ing
+  namespace: tekton-test
+spec:
+  rules:
+  - host: "event-listener.dev-k8s.goorm.io"
+    http:
+      paths:
+      - backend:
+          service:
+            name: el-el
+            port:
+              number: 8080
+        path: /
+        pathType: Prefix

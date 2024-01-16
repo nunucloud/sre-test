@@ -1,0 +1,50 @@
+apiVersion: triggers.tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  name: tt
+  namespace: tekton-test
+spec:
+  params:
+    - name: giturl # git repo url
+    - name: imagetag # image tag in commit message
+  resourcetemplates: # automate create pipelinerun
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        namespace: tekton-test
+        generateName: cicd-run-
+      spec:
+        serviceAccountName: cicd-sa
+        pipelineRef: # select pipeline
+          name: cicd
+        podTemplate: # setting taskpod
+          securityContext:  # pod security
+            fsGroup: 65532 # set volume owner gid = 65532
+        workspaces: # volume for clone code
+        - name: shared-data
+          volumeClaimTemplate: # automatically create pvc -> create pv
+            spec:
+              accessModes:
+              - ReadWriteOnce
+              resources:
+                requests:
+                  storage: 1Gi
+        - name: git-credentials
+          secret:
+            secretName: git-credentials
+        - name: docker-credentials
+          secret:
+            secretName: docker-credentials
+          
+        params: # git address
+        - name: repo-url
+          value: $(tt.params.giturl)
+        - name: image-reference
+          value: patnmat/sre-test:$(tt.params.imagetag)
+        - name: dockerfile-path
+          value: Dockerfile
+        - name: kubectl-args
+          value:
+            - "apply"
+            - "-f"
+            - "./deployment/mario/tt-deployment.yaml"

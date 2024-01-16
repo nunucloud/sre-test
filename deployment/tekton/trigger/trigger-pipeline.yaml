@@ -1,0 +1,77 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: cicd
+spec:
+  description: | 
+    This pipeline clone code from git, build and push images, and deploys the applications.
+  
+  params:
+  - name: repo-url
+    type: string
+    description: The git repo URL to clone from.
+  # - name: revision
+  #   type: string
+  #   description: Revision to checkout. (branch, tag, sha, ref, etc...)
+  - name: image-reference
+    type: string
+    description: The name (reference) of the image to build.
+  - name: dockerfile-path
+    type: string
+    description: |
+      The path to the Dockerfile to execute (default: ./Dockerfile)
+  - name: kubectl-args
+    type: array
+    description: | 
+      The arguments to pass to kubectl
+  
+  
+  workspaces:
+  - name: shared-data
+    description: | 
+      A workspace that will be shared with all the tasks.
+  - name: git-credentials
+    description: My ssh credentials
+  - name: docker-credentials
+    description: My docker credentials
+ 
+  tasks:
+  - name: fetch-source
+    taskRef:
+      name: git-clone
+    workspaces:
+    - name: output
+      workspace: shared-data
+    - name: ssh-directory
+      workspace: git-credentials
+    params:
+    - name: url
+      value: $(params.repo-url)
+
+  - name: build-push
+    runAfter: ["fetch-source"]
+    taskRef:
+      name: kaniko
+    workspaces:
+    - name: source
+      workspace: shared-data
+    - name: dockerconfig
+      workspace: docker-credentials
+    params:
+    - name: IMAGE
+      value: $(params.image-reference)
+    - name: DOCKERFILE
+      value: $(params.dockerfile-path)
+
+  - name: deploy
+    runAfter: ["build-push"]
+    taskRef:
+      name: kubernetes-actions
+    workspaces:
+      - name: manifest-dir
+        workspace: shared-data
+    params:
+      - name: args
+        value: $(params.kubectl-args[*])
+      - name: deployimage
+        value: $(params.image-reference)

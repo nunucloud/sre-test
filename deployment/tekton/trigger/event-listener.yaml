@@ -1,0 +1,15 @@
+apiVersion: triggers.tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: el
+  namespace: tekton-test
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: https
+spec:
+  serviceAccountName: trigger-sa
+  triggers:
+    - name: trigger
+      bindings:
+       - ref: tb
+      template:
+         ref: tt
