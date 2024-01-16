@@ -14,4 +14,4 @@ export KUBE_CONFIG_PATH=path/to/.kube/config
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/nunucloud/sre-test/main/deployment/deployment.yaml
 ```
-# edit
+
