@@ -30,7 +30,7 @@ metadata:
   namespace: tekton-test
 spec:
   rules:
-  - host: "event-listener.dev-k8s.goorm.io"
+  - host: "hostname"
     http:
       paths:
       - backend:
